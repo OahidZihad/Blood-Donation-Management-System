@@ -13,10 +13,18 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM blood_bank";
+	$per_page = 10;
+	$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+	$page = max(1, $page);
+	$offset = ($page - 1) * $per_page;
+
+	$total_result = $conn->query("SELECT COUNT(*) AS cnt FROM blood_bank");
+	$total_rows = $total_result->fetch_assoc()['cnt'];
+	$total_pages = (int)ceil($total_rows / $per_page);
+
+	$sql = "SELECT * FROM blood_bank LIMIT $per_page OFFSET $offset";
 	$result = $conn->query($sql);
 
-	
 	$conn->close();
 ?>
 
@@ -59,8 +67,22 @@
 
 		</table>
 		<br>
+		<div align="center">
+			<?php
+				if ($total_pages > 1) {
+					for ($i = 1; $i <= $total_pages; $i++) {
+						if ($i == $page) {
+							echo "<strong style='margin: 0 4px;'>[$i]</strong>";
+						} else {
+							echo "<a href='?page=$i' style='margin: 0 4px; color: Red;'>$i</a>";
+						}
+					}
+				}
+			?>
+		</div>
 		<br>
-		
+		<br>
+
 		<a href="index.html" style="color: Red">HOME</a><br><br>
 
 	</body>
