@@ -13,22 +13,24 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$blood_id = $_POST['blood_id'];
-	$qty = $_POST['qty'];
+	$blood_id = (int)$_POST['blood_id'];
+	$qty = (int)$_POST['qty'];
 
-	$sql = "INSERT INTO blood_stock (blood_id, qty)
-	VALUES ('$blood_id', '$qty')";
+	// Use INSERT ... ON DUPLICATE KEY UPDATE to handle both new and existing stock entries
+	$stmt = $conn->prepare("INSERT INTO blood_stock (blood_id, qty) VALUES (?, ?) ON DUPLICATE KEY UPDATE qty = qty + VALUES(qty)");
+	$stmt->bind_param("ii", $blood_id, $qty);
 
-	if ($conn->query($sql) === TRUE) {
+	if ($stmt->execute()) {
 	  // echo "New record created successfully";
 
 		echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
 
 		echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
 	} else {
-	  echo "Error: " . $sql . "<br>" . $conn->error;
+	  echo "Error: " . $stmt->error;
 	}
 
+	$stmt->close();
 	$conn->close();
 ?>
 

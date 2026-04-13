@@ -14,27 +14,42 @@
 	}
 
 	$seeker_id = $_POST['seeker_id'];
-	$blood_id = $_POST['blood_id'];
-	$qty = $_POST['qty'];
-	
+	$blood_id = (int)$_POST['blood_id'];
+	$qty = (int)$_POST['qty'];
 
-	$sql = "INSERT INTO donation_history (seeker_id, blood_id, qty)
-	VALUES ('$seeker_id', '$blood_id', '$qty')";
+	// Check that sufficient stock is available before deducting
+	$check = $conn->prepare("SELECT qty FROM blood_stock WHERE blood_id = ?");
+	$check->bind_param("i", $blood_id);
+	$check->execute();
+	$check->bind_result($available_qty);
+	$check->fetch();
+	$check->close();
 
-	if ($conn->query($sql) === TRUE) {
+	if ($qty <= 0 || $available_qty === null || $qty > $available_qty) {
+	  echo "Error: Requested quantity (" . htmlspecialchars($qty) . ") exceeds available stock (" . (int)$available_qty . ").";
+	  $conn->close();
+	  exit;
+	}
+
+	$stmt = $conn->prepare("INSERT INTO donation_history (seeker_id, blood_id, qty) VALUES (?, ?, ?)");
+	$stmt->bind_param("sii", $seeker_id, $blood_id, $qty);
+
+	if ($stmt->execute()) {
 	  // echo "New record created successfully<br><br>";
 		echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
 
 		echo '<br><br><div style="font-size:1.50em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
-	  $sql = "UPDATE blood_stock SET qty = (qty-$qty) WHERE blood_id = $blood_id";
-	  if ($conn->query($sql) === TRUE) {
+	  $stmt->close();
+	  $upd = $conn->prepare("UPDATE blood_stock SET qty = (qty - ?) WHERE blood_id = ?");
+	  $upd->bind_param("ii", $qty, $blood_id);
+	  if ($upd->execute()) {
 	  		// echo "Blood Stock Updated";
 	  	echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">Blood Stock Updated</span></div>';
 	  	  }
-	  	
-	  	
+	  $upd->close();
 	} else {
-	  echo "Error: " . $sql . "<br>" . $conn->error;
+	  echo "Error: " . $stmt->error;
+	  $stmt->close();
 	}
 
 	$conn->close();

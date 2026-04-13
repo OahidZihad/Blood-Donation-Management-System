@@ -19,19 +19,20 @@
 	$bloodbank_phone = $_POST['bloodbank_phone'];
 	$email = $_POST['email'];
 
-	$sql = "INSERT INTO blood_bank (id,blood_group,address,bloodbank_phone,email)
-	VALUES ('$id', '$blood_group', '$address', '$bloodbank_phone', '$email')";
+	$stmt = $conn->prepare("INSERT INTO blood_bank (id,blood_group,address,bloodbank_phone,email) VALUES (?, ?, ?, ?, ?)");
+	$stmt->bind_param("sssss", $id, $blood_group, $address, $bloodbank_phone, $email);
 
-	if ($conn->query($sql) === TRUE) {
+	if ($stmt->execute()) {
 	  // echo  "New record created successfully";
 
 		echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
 
 		echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
 	} else {
-	  echo "Error: " . $sql . "<br>" . $conn->error;
+	  echo "Error: " . $stmt->error;
 	}
 
+	$stmt->close();
 	$conn->close();
 ?>
 
