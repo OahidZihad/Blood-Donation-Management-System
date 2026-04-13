@@ -21,18 +21,19 @@
 	$address = $_POST['address'];
 	$email = $_POST['email'];
 
-	$sql = "INSERT INTO donor (id,name,blood_group,last_donation_date, contact_no,address,email)
-	VALUES ('$id', '$name', '$blood_group','$last_donation_date', '$contact_no', '$address',  '$email')";
+	$stmt = $conn->prepare("INSERT INTO donor (id,name,blood_group,last_donation_date,contact_no,address,email) VALUES (?, ?, ?, ?, ?, ?, ?)");
+	$stmt->bind_param("sssssss", $id, $name, $blood_group, $last_donation_date, $contact_no, $address, $email);
 
-	if ($conn->query($sql) === TRUE) {
+	if ($stmt->execute()) {
 
 	  echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
 
 	  echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
 	} else {
-	  echo "Error: " . $sql . "<br>" . $conn->error;
+	  echo "Error: " . $stmt->error;
 	}
 
+	$stmt->close();
 	$conn->close();
 ?>
 
@@ -44,7 +45,7 @@
 		<br>
 		<br>
 		
-		<a href="insert_donor.html" style="color: #0e3c68">GO BACK</a>
+		<a href="insert_donor.php" style="color: #0e3c68">GO BACK</a>
 		<br>
 		<br>
 		<a href="index.html" style="color: #0e3c68">HOME</a><br><br>
