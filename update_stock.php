@@ -25,7 +25,8 @@
 	<head>
 		<title>Update Blood Stock</title>
 	</head>
-	<body align="center" <body align="center" <body align="center" <div style="border: 6px solid red; color: Tomato;border-radius: 50px;width: 30%;margin-left: 475px;margin-top: 80px;background-color:powderblue;"></div>
+	<body align="center">
+	<div style="border: 6px solid red; color: Tomato;border-radius: 50px;width: 30%;margin-left: 475px;margin-top: 80px;background-color:powderblue;"></div>
 
 		<img src="Images/add_blood.png" alt="" style="width: 130px;height: 150px;margin-top: 10px;margin-bottom: -15px">
 
@@ -39,7 +40,7 @@
 					  // output data of each row
 
 						 while($row = $result->fetch_assoc()) {
-						    echo '<option value="'.$row['id'].'">'.$row[blood_group].'</option>';
+						    echo '<option value="'.$row['id'].'">'.$row['blood_group'].'</option>';
 					  	}
 
 					} else {

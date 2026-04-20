@@ -26,7 +26,8 @@
 		<title>Get Blood</title>
 	</head>
 	<!-- <body align="center" style="color: Tomato"> -->
-		<body align="center" <div style="border: 6px solid red; color: Tomato;border-radius: 50px;width: 30%;margin-left: 460px;margin-top: 60px;background-color:powderblue;"></div>
+		<body align="center">
+		<div style="border: 6px solid red; color: Tomato;border-radius: 50px;width: 30%;margin-left: 460px;margin-top: 60px;background-color:powderblue;"></div>
 
 			<img src="Images/insert_blood.png" alt="" style="width: 100px;height: 150px;margin-top: 10px;margin-bottom: -15px">
 
@@ -45,7 +46,7 @@
 					  // output data of each row
 
 						 while($row = $result->fetch_assoc()) {
-						    echo '<option value="'.$row['blood_id'].'">'.$row[blood_group].' ->'. $row['qty'].'</option>';
+						    echo '<option value="'.$row['blood_id'].'">'.$row['blood_group'].' ->'. $row['qty'].'</option>';
 					  	}
 
 					} else {

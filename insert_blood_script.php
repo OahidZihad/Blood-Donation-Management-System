@@ -39,7 +39,8 @@
 	<head>
 		<title>Insert Blood Script</title>
 	</head>
-	<body align="center" <div style="border: 6px solid red; color: Red;border-radius: 50px;width: 30%;margin-left: 475px;margin-top: 170px;background-color:powderblue;"></div>
+	<body align="center">
+	<div style="border: 6px solid red; color: Red;border-radius: 50px;width: 30%;margin-left: 475px;margin-top: 170px;background-color:powderblue;"></div>
 
 		<br>
 		<br>
