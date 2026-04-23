@@ -6,18 +6,23 @@
 	$password = "";
 	$dbname = "blood_db";
 
-	// Create connection
+	$pageSize = 10;
+	$page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+	$offset = ($page - 1) * $pageSize;
+
 	$conn = new mysqli($servername, $username, $password, $dbname);
-	// Check connection
 	if ($conn->connect_error) {
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM seeker";
-	$result = $conn->query($sql);
+	// Get total count
+	$countResult = $conn->query("SELECT COUNT(*) as total FROM seeker");
+	$totalRows = ($countResult && $row = $countResult->fetch_assoc()) ? (int)$row['total'] : 0;
+	$totalPages = (int)ceil($totalRows / $pageSize);
 
-	
-	$conn->close();
+	// Paginated fetch
+	$sql = "SELECT * FROM seeker LIMIT $pageSize OFFSET $offset";
+	$result = $conn->query($sql);
 ?>
 
 
@@ -60,11 +65,23 @@
 				?>
 			</tbody>
 
-		</table>
-		<br>
+</table>
 		<br>
 		
+		<div>
+		<?php
+		if ($totalPages > 1) {
+		    if ($page > 1) {
+		        echo '<a href="available_seeker_list.php?page=' . ($page - 1) . '" style="margin-right:10px">&laquo; Previous</a>';
+		    }
+		    echo 'Page ' . $page . ' of ' . $totalPages;
+		    if ($page < $totalPages) {
+		        echo '<a href="available_seeker_list.php?page=' . ($page + 1) . '" style="margin-left:10px">Next &raquo;</a>';
+		    }
+		}
+		?>
+		</div>
+		<br>
 		<a href="index.html" style="color: Red">HOME</a><br><br>
-
 	</body>
 </html>
