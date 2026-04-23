@@ -13,10 +13,21 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM seeker";
+	// Pagination setup
+	$limit = 10;
+	$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+	$offset = ($page - 1) * $limit;
+
+	// Count total rows
+	$count_sql = "SELECT COUNT(*) as total FROM seeker";
+	$count_result = $conn->query($count_sql);
+	$total_rows = ($count_result && $row = $count_result->fetch_assoc()) ? (int)$row['total'] : 0;
+	$total_pages = ceil($total_rows / $limit);
+
+	// Fetch paginated results
+	$sql = "SELECT * FROM seeker LIMIT $limit OFFSET $offset";
 	$result = $conn->query($sql);
 
-	
 	$conn->close();
 ?>
 
@@ -65,6 +76,31 @@
 		<br>
 		
 		<a href="index.html" style="color: Red">HOME</a><br><br>
+
+<!-- Pagination Controls -->
+<div style="margin-top: 16px;">
+<?php
+if ($total_pages > 1) {
+    echo '<div style="display:inline-block;">';
+    if ($page > 1) {
+        $prev = $page - 1;
+        echo "<a href='?page=$prev'>Previous</a> ";
+    }
+    for ($i = 1; $i <= $total_pages; $i++) {
+        if ($i == $page) {
+            echo "<strong style='padding:0 4px;'>$i</strong> ";
+        } else {
+            echo "<a href='?page=$i' style='padding:0 4px;'>$i</a> ";
+        }
+    }
+    if ($page < $total_pages) {
+        $next = $page + 1;
+        echo "<a href='?page=$next'>Next</a> ";
+    }
+    echo '</div>';
+}
+?>
+</div>
 
 	</body>
 </html>
