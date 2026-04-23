@@ -15,26 +15,40 @@
 
 	$seeker_id = $_POST['seeker_id'];
 	$blood_id = $_POST['blood_id'];
-	$qty = $_POST['qty'];
-	
+	$qty = (int)$_POST['qty'];
 
-	$sql = "INSERT INTO donation_history (seeker_id, blood_id, qty)
+	// Check available stock before dispensing to prevent negative stock
+	$stock_sql = "SELECT qty FROM blood_stock WHERE blood_id = " . (int)$blood_id;
+	$stock_result = $conn->query($stock_sql);
+	$available_qty = 0;
+	if ($stock_result && $stock_result->num_rows > 0) {
+		$stock_row = $stock_result->fetch_assoc();
+		$available_qty = (int)$stock_row['qty'];
+	}
+
+	if ($qty <= 0) {
+		echo '<br><br><div style="font-size:1.25em;font-weight:bold;color:red;">Error: Quantity must be greater than zero.</div>';
+	} elseif ($qty > $available_qty) {
+		echo '<br><br><div style="font-size:1.25em;font-weight:bold;color:red;">Error: Insufficient stock. Available: ' . $available_qty . ' units.</div>';
+	} else {
+		$sql = "INSERT INTO donation_history (seeker_id, blood_id, qty)
 	VALUES ('$seeker_id', '$blood_id', '$qty')";
 
-	if ($conn->query($sql) === TRUE) {
-	  // echo "New record created successfully<br><br>";
-		echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
+		if ($conn->query($sql) === TRUE) {
+		  // echo "New record created successfully<br><br>";
+			echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
 
-		echo '<br><br><div style="font-size:1.50em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
-	  $sql = "UPDATE blood_stock SET qty = (qty-$qty) WHERE blood_id = $blood_id";
-	  if ($conn->query($sql) === TRUE) {
-	  		// echo "Blood Stock Updated";
-	  	echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">Blood Stock Updated</span></div>';
-	  	  }
-	  	
-	  	
-	} else {
-	  echo "Error: " . $sql . "<br>" . $conn->error;
+			echo '<br><br><div style="font-size:1.50em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
+		  $sql = "UPDATE blood_stock SET qty = (qty-$qty) WHERE blood_id = $blood_id";
+		  if ($conn->query($sql) === TRUE) {
+		  		// echo "Blood Stock Updated";
+		  	echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">Blood Stock Updated</span></div>';
+		  	  }
+
+
+		} else {
+		  echo "Error: " . $sql . "<br>" . $conn->error;
+		}
 	}
 
 	$conn->close();
