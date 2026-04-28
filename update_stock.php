@@ -13,7 +13,7 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT id, blood_group FROM blood_bank";
+	$sql = "SELECT id, blood_group, address FROM blood_bank";
 	$result = $conn->query($sql);
 
 	
@@ -39,7 +39,7 @@
 					  // output data of each row
 
 						 while($row = $result->fetch_assoc()) {
-						    echo '<option value="'.$row['id'].'">'.$row[blood_group].'</option>';
+						    echo '<option value="'.$row['id'].'">'.$row['blood_group'].' ('.$row['address'].')</option>';
 					  	}
 
 					} else {
