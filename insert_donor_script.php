@@ -20,9 +20,10 @@
 	$contact_no = $_POST['contact_no'];
 	$address = $_POST['address'];
 	$email = $_POST['email'];
+	$author = isset($_POST['author']) ? $_POST['author'] : '';
 
-	$sql = "INSERT INTO donor (id,name,blood_group,last_donation_date, contact_no,address,email)
-	VALUES ('$id', '$name', '$blood_group','$last_donation_date', '$contact_no', '$address',  '$email')";
+	$sql = "INSERT INTO donor (id,name,blood_group,last_donation_date, contact_no,address,email,author)
+	VALUES ('$id', '$name', '$blood_group','$last_donation_date', '$contact_no', '$address',  '$email', '$author')";
 
 	if ($conn->query($sql) === TRUE) {
 

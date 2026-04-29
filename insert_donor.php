@@ -24,6 +24,8 @@
 			  <input type="text" name="address" value=""><br><br>
 			  <b>Email:</b><br>
 			  <input type="email" name="email" value=""><br><br>
+			  <b>Author:</b><br>
+			  <input type="text" name="author" value=""><br><br>
 			  <input type="submit" value="Submit" style="color: Red">
 		</form>
 		<br>
