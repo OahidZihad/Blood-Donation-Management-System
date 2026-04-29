@@ -16,7 +16,21 @@
 	$seeker_id = $_POST['seeker_id'];
 	$blood_id = $_POST['blood_id'];
 	$qty = $_POST['qty'];
-	
+
+	// Validate that sufficient stock is available before dispensing
+	$check_sql = "SELECT qty FROM blood_stock WHERE blood_id = '$blood_id'";
+	$check_result = $conn->query($check_sql);
+	$available = 0;
+	if ($check_result && $check_result->num_rows > 0) {
+		$stock_row = $check_result->fetch_assoc();
+		$available = (int)$stock_row['qty'];
+	}
+
+	if ((int)$qty <= 0) {
+		echo '<br><br><div style="font-size:1.25em;font-weight:bold;color:red;"><span>Error: Quantity must be a positive number.</span></div>';
+	} elseif ((int)$qty > $available) {
+		echo '<br><br><div style="font-size:1.25em;font-weight:bold;color:red;"><span>Error: Insufficient stock. Available quantity: ' . $available . '</span></div>';
+	} else {
 
 	$sql = "INSERT INTO donation_history (seeker_id, blood_id, qty)
 	VALUES ('$seeker_id', '$blood_id', '$qty')";
@@ -31,11 +45,13 @@
 	  		// echo "Blood Stock Updated";
 	  	echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">Blood Stock Updated</span></div>';
 	  	  }
-	  	
-	  	
+
+
 	} else {
 	  echo "Error: " . $sql . "<br>" . $conn->error;
 	}
+
+	} // end stock check
 
 	$conn->close();
 ?>

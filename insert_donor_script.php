@@ -44,7 +44,7 @@
 		<br>
 		<br>
 		
-		<a href="insert_donor.html" style="color: #0e3c68">GO BACK</a>
+		<a href="insert_donor.php" style="color: #0e3c68">GO BACK</a>
 		<br>
 		<br>
 		<a href="index.html" style="color: #0e3c68">HOME</a><br><br>
