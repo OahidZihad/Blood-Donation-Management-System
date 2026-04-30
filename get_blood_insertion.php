@@ -16,25 +16,29 @@
 	$seeker_id = $_POST['seeker_id'];
 	$blood_id = $_POST['blood_id'];
 	$qty = $_POST['qty'];
-	
 
-	$sql = "INSERT INTO donation_history (seeker_id, blood_id, qty)
-	VALUES ('$seeker_id', '$blood_id', '$qty')";
+	// INSERT donation_history using prepared statement to prevent SQL injection
+	$stmt = $conn->prepare("INSERT INTO donation_history (seeker_id, blood_id, qty) VALUES (?, ?, ?)");
+	$stmt->bind_param("iii", $seeker_id, $blood_id, $qty);
 
-	if ($conn->query($sql) === TRUE) {
+	if ($stmt->execute()) {
 	  // echo "New record created successfully<br><br>";
 		echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
 
 		echo '<br><br><div style="font-size:1.50em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
-	  $sql = "UPDATE blood_stock SET qty = (qty-$qty) WHERE blood_id = $blood_id";
-	  if ($conn->query($sql) === TRUE) {
+	  $stmt->close();
+
+	  // UPDATE blood_stock using prepared statement to prevent SQL injection
+	  $stmt2 = $conn->prepare("UPDATE blood_stock SET qty = (qty - ?) WHERE blood_id = ?");
+	  $stmt2->bind_param("ii", $qty, $blood_id);
+	  if ($stmt2->execute()) {
 	  		// echo "Blood Stock Updated";
 	  	echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">Blood Stock Updated</span></div>';
-	  	  }
-	  	
-	  	
+	  	}
+	  $stmt2->close();
 	} else {
-	  echo "Error: " . $sql . "<br>" . $conn->error;
+	  echo "Error: " . $conn->error;
+	  $stmt->close();
 	}
 
 	$conn->close();
