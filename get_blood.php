@@ -13,7 +13,7 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT blood_id, blood_group, qty FROM blood_bank bb JOIN blood_stock bs ON bs.blood_id = bb.id";
+	$sql = "SELECT blood_id, blood_group, bb.address, qty FROM blood_bank bb JOIN blood_stock bs ON bs.blood_id = bb.id";
 	$result = $conn->query($sql);
 
 	
@@ -45,7 +45,7 @@
 					  // output data of each row
 
 						 while($row = $result->fetch_assoc()) {
-						    echo '<option value="'.$row['blood_id'].'">'.$row[blood_group].' ->'. $row['qty'].'</option>';
+						    echo '<option value="'.$row['blood_id'].'">'.$row['blood_group'].' ('.$row['address'].') -> '.$row['qty'].'</option>';
 					  	}
 
 					} else {
