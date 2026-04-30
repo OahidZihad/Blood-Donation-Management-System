@@ -13,7 +13,7 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT blood_id, blood_group, bb.address, qty FROM blood_bank bb JOIN blood_stock bs ON bs.blood_id = bb.id";
+	$sql = "SELECT blood_id, blood_group, COALESCE(bb.address, 'Unknown') AS address, qty FROM blood_bank bb JOIN blood_stock bs ON bs.blood_id = bb.id";
 	$result = $conn->query($sql);
 
 	
