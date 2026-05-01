@@ -164,3 +164,21 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rating`
+--
+
+DROP TABLE IF EXISTS `rating`;
+CREATE TABLE IF NOT EXISTS `rating` (
+  `id` int(7) NOT NULL AUTO_INCREMENT,
+  `entity_type` enum('donor','blood_bank','seeker') NOT NULL,
+  `entity_id` int(7) NOT NULL,
+  `score` tinyint(4) NOT NULL,
+  `comment` text DEFAULT NULL,
+  `rated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `chk_rating_score` CHECK (`score` >= 1 AND `score` <= 10)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
