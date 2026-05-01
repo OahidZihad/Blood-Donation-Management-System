@@ -16,7 +16,17 @@
 	$seeker_id = $_POST['seeker_id'];
 	$blood_id = $_POST['blood_id'];
 	$qty = $_POST['qty'];
-	
+
+	// Guard: check there is enough stock before dispensing
+	$stock_sql = "SELECT qty FROM blood_stock WHERE blood_id = '$blood_id'";
+	$stock_result = $conn->query($stock_sql);
+	if (!$stock_result || $stock_result->num_rows === 0) {
+		die('<p style="color:red;font-weight:bold;">Error: No stock record found for the selected blood bank entry.</p><a href="get_blood.php">GO BACK</a>');
+	}
+	$stock_row = $stock_result->fetch_assoc();
+	if ($stock_row['qty'] < $qty) {
+		die('<p style="color:red;font-weight:bold;">Error: Insufficient blood stock. Available: ' . (int)$stock_row['qty'] . ' unit(s).</p><a href="get_blood.php">GO BACK</a>');
+	}
 
 	$sql = "INSERT INTO donation_history (seeker_id, blood_id, qty)
 	VALUES ('$seeker_id', '$blood_id', '$qty')";

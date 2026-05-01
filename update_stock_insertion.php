@@ -16,15 +16,24 @@
 	$blood_id = $_POST['blood_id'];
 	$qty = $_POST['qty'];
 
-	$sql = "INSERT INTO blood_stock (blood_id, qty)
-	VALUES ('$blood_id', '$qty')";
+	// Check if a stock row already exists for this blood bank entry
+	$check_sql = "SELECT id FROM blood_stock WHERE blood_id = '$blood_id'";
+	$check_result = $conn->query($check_sql);
+
+	if ($check_result && $check_result->num_rows > 0) {
+		// Update existing stock by adding the new quantity
+		$sql = "UPDATE blood_stock SET qty = qty + '$qty' WHERE blood_id = '$blood_id'";
+	} else {
+		// No existing row — insert a new one
+		$sql = "INSERT INTO blood_stock (blood_id, qty) VALUES ('$blood_id', '$qty')";
+	}
 
 	if ($conn->query($sql) === TRUE) {
 	  // echo "New record created successfully";
 
 		echo '<img src="Images/thumbs_up.png" alt="" style="width: 125px;height: 100px;margin-top: 10px;margin-bottom: -10px;">';
 
-		echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">New record created successfully</span></div>';
+		echo '<br><br><div style="font-size:1.25em;font-weight:bold;"><span style="font-size:1.25em;font-weight:bold;">Stock updated successfully</span></div>';
 	} else {
 	  echo "Error: " . $sql . "<br>" . $conn->error;
 	}
