@@ -13,10 +13,23 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM seeker";
-	$result = $conn->query($sql);
+	$search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-	
+	if ($search !== '') {
+		$like = '%' . $search . '%';
+		$stmt = $conn->prepare(
+			"SELECT * FROM seeker
+			 WHERE name LIKE ? OR address LIKE ? OR blood_group LIKE ? OR contact_no LIKE ?"
+		);
+		$stmt->bind_param('ssss', $like, $like, $like, $like);
+		$stmt->execute();
+		$result = $stmt->get_result();
+	} else {
+		$sql = "SELECT * FROM seeker";
+		$result = $conn->query($sql);
+	}
+
+
 	$conn->close();
 ?>
 
@@ -28,6 +41,15 @@
 	<body align="center" <div style="border: 6px solid red; border-radius: 50px;width: 40%;margin-left: 400px;margin-top: 20px;background-color:powderblue;"></div>
 
 		<h1 style="color: Red">Available Blood Seeker</h1>
+
+		<form method="GET" action="available_seeker_list.php" style="margin-bottom:16px;">
+			<input type="text" name="search" placeholder="Search by name, address, blood group or contact"
+				value="<?php echo htmlspecialchars($search); ?>" style="width:360px;padding:4px;">
+			<button type="submit">Search</button>
+			<?php if ($search !== ''): ?>
+				<a href="available_seeker_list.php">Clear</a>
+			<?php endif; ?>
+		</form>
 
 		<table align="center" border="1">
 			<thead>
