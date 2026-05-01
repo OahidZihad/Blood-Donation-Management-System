@@ -159,6 +159,24 @@ INSERT INTO `seeker` (`id`, `name`, `address`, `age`, `blood_group`, `contact_no
 (2, 'Ri Naz', 'Dhaka', 25, 'B-', '01711111111'),
 (3, 'Shanila', 'Dhaka', 25, 'A+', '01722222222'),
 (4, 'Oahid', 'Gaibandha', 25, 'O+', '01711111111');
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rating`
+--
+
+DROP TABLE IF EXISTS `rating`;
+CREATE TABLE IF NOT EXISTS `rating` (
+  `id` int(7) NOT NULL AUTO_INCREMENT,
+  `entity_type` enum('donor','blood_bank','seeker') NOT NULL,
+  `entity_id` int(7) NOT NULL,
+  `score` tinyint(2) NOT NULL,
+  `comment` text DEFAULT NULL,
+  `rated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `chk_score` CHECK (`score` >= 1 AND `score` <= 10)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
