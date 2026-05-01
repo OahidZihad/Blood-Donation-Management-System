@@ -13,7 +13,13 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM donor";
+	$search = isset($_GET['search']) ? $_GET['search'] : '';
+	if ($search !== '') {
+		$safe_search = $conn->real_escape_string($search);
+		$sql = "SELECT * FROM donor WHERE name LIKE '%$safe_search%' OR blood_group LIKE '%$safe_search%' OR address LIKE '%$safe_search%'";
+	} else {
+		$sql = "SELECT * FROM donor";
+	}
 	$result = $conn->query($sql);
 
 	
@@ -28,6 +34,11 @@
 	<body align="center" <div style="border: 6px solid red; border-radius: 50px;width: 60%;margin-left: 270px;margin-top: 20px;background-color:powderblue;"></div>
 
 		<h1 style="color: Red">Available Blood Doner</h1>
+
+		<form method="GET" action="" style="margin-bottom: 20px;">
+			<input type="text" name="search" placeholder="Search by name, blood group or address..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+			<input type="submit" value="Search">
+		</form>
 
 		<table align="center" border="1">
 			<thead>
