@@ -13,11 +13,22 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM donor";
-	$result = $conn->query($sql);
+	$perPage = 10;
+	$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+	if ($page < 1) {
+		$page = 1;
+	}
+	$countSql = "SELECT COUNT(*) AS total FROM donor";
+	$countResult = $conn->query($countSql);
+	$totalRows = $countResult->fetch_assoc()['total'];
+	$totalPages = ceil($totalRows / $perPage);
+	if ($totalPages > 0 && $page > $totalPages) {
+		$page = $totalPages;
+	}
+	$offset = ($page - 1) * $perPage;
 
-	
-	$conn->close();
+	$sql = "SELECT * FROM donor ORDER BY id LIMIT $perPage OFFSET $offset";
+	$result = $conn->query($sql);
 ?>
 
 
@@ -63,6 +74,19 @@
 			</tbody>
 
 		</table>
+		<?php if ($totalPages > 1) { ?>
+			<br>
+			<div>
+				<?php if ($page > 1) { ?>
+					<a href="available_donor_list.php?page=<?php echo $page - 1; ?>" style="color: Red">Previous</a>
+				<?php } ?>
+				<span> Page <?php echo $page; ?> of <?php echo $totalPages; ?> </span>
+				<?php if ($page < $totalPages) { ?>
+					<a href="available_donor_list.php?page=<?php echo $page + 1; ?>" style="color: Red">Next</a>
+				<?php } ?>
+			</div>
+		<?php } ?>
+		<?php $conn->close(); ?>
 		<br>
 		<br>
 		
