@@ -13,7 +13,12 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
+	$search = isset($_GET['search']) ? trim($_GET['search']) : '';
 	$sql = "SELECT * FROM blood_bank";
+	if ($search !== '') {
+		$search_value = "%" . $conn->real_escape_string($search) . "%";
+		$sql .= " WHERE id LIKE '$search_value' OR blood_group LIKE '$search_value' OR address LIKE '$search_value' OR bloodbank_phone LIKE '$search_value' OR email LIKE '$search_value'";
+	}
 	$result = $conn->query($sql);
 
 	
@@ -27,6 +32,12 @@
 	<body align="center" <div style="border: 6px solid red; border-radius: 50px;width: 50%;margin-left: 330px;margin-top: 20px;background-color:powderblue;"></div>
 
 		<h1 style="color: Red">Available Blood in Blood Bank</h1>
+		<form method="get" action="available_blood.php">
+			<input type="text" name="search" placeholder="Search blood bank" value="<?php echo htmlspecialchars($search); ?>">
+			<input type="submit" value="Search">
+			<a href="available_blood.php" style="color: Red">Clear</a>
+		</form>
+		<br>
 
 		<table align="center" border="1">
 			<thead>
