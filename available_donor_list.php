@@ -13,10 +13,23 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM donor";
-	$result = $conn->query($sql);
+	$search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-	
+	if ($search !== '') {
+		$like = '%' . $search . '%';
+		$stmt = $conn->prepare(
+			"SELECT * FROM donor
+			 WHERE name LIKE ? OR blood_group LIKE ? OR contact_no LIKE ? OR address LIKE ? OR email LIKE ?"
+		);
+		$stmt->bind_param('sssss', $like, $like, $like, $like, $like);
+		$stmt->execute();
+		$result = $stmt->get_result();
+	} else {
+		$sql = "SELECT * FROM donor";
+		$result = $conn->query($sql);
+	}
+
+
 	$conn->close();
 ?>
 
@@ -28,6 +41,15 @@
 	<body align="center" <div style="border: 6px solid red; border-radius: 50px;width: 60%;margin-left: 270px;margin-top: 20px;background-color:powderblue;"></div>
 
 		<h1 style="color: Red">Available Blood Doner</h1>
+
+		<form method="GET" action="available_donor_list.php" style="margin-bottom:16px;">
+			<input type="text" name="search" placeholder="Search by name, blood group, contact, address or email"
+				value="<?php echo htmlspecialchars($search); ?>" style="width:380px;padding:4px;">
+			<button type="submit">Search</button>
+			<?php if ($search !== ''): ?>
+				<a href="available_donor_list.php">Clear</a>
+			<?php endif; ?>
+		</form>
 
 		<table align="center" border="1">
 			<thead>
