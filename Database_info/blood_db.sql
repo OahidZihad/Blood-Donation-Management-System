@@ -121,6 +121,7 @@ CREATE TABLE IF NOT EXISTS `donor` (
   `contact_no` varchar(11) NOT NULL,
   `address` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
+  `author` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=121 DEFAULT CHARSET=latin1;
 
@@ -128,10 +129,10 @@ CREATE TABLE IF NOT EXISTS `donor` (
 -- Dumping data for table `donor`
 --
 
-INSERT INTO `donor` (`id`, `name`, `blood_group`, `last_donation_date`, `contact_no`, `address`, `email`) VALUES
-(1, 'Shoumik', 'A+', '2020-05-06', '01752746999', 'Gaibandha', 'mojammalhossain813@gmail.com'),
-(2, 'Ri Naz', 'A-', '2020-05-06', '01711111111', 'America', 'guythatsfunny@gmail.com'),
-(5, 'zihad', 'O+', '2020-05-06', '01752746999', 'gaibandha', 'ludhfuiasdasf@gmail.com');
+INSERT INTO `donor` (`id`, `name`, `blood_group`, `last_donation_date`, `contact_no`, `address`, `email`, `author`) VALUES
+(1, 'Shoumik', 'A+', '2020-05-06', '01752746999', 'Gaibandha', 'mojammalhossain813@gmail.com', NULL),
+(2, 'Ri Naz', 'A-', '2020-05-06', '01711111111', 'America', 'guythatsfunny@gmail.com', NULL),
+(5, 'zihad', 'O+', '2020-05-06', '01752746999', 'gaibandha', 'ludhfuiasdasf@gmail.com', NULL);
 
 -- --------------------------------------------------------
 

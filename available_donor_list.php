@@ -13,10 +13,17 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM donor";
+	$search = isset($_GET['search']) ? $_GET['search'] : '';
+	$escaped_search = $conn->real_escape_string($search);
+
+	if ($escaped_search !== '') {
+		$sql = "SELECT * FROM donor WHERE name LIKE '%$escaped_search%' OR blood_group LIKE '%$escaped_search%' OR address LIKE '%$escaped_search%' OR email LIKE '%$escaped_search%' OR author LIKE '%$escaped_search%'";
+	} else {
+		$sql = "SELECT * FROM donor";
+	}
 	$result = $conn->query($sql);
 
-	
+
 	$conn->close();
 ?>
 
@@ -29,6 +36,11 @@
 
 		<h1 style="color: Red">Available Blood Doner</h1>
 
+		<form method="get" action="available_donor_list.php" style="margin-bottom: 10px;">
+			<input type="text" name="search" placeholder="Search donors..." value="<?php echo htmlspecialchars(isset($_GET['search']) ? $_GET['search'] : ''); ?>">
+			<input type="submit" value="Search" style="color: Red">
+		</form>
+
 		<table align="center" border="1">
 			<thead>
 				<th style="color: Tomato">ID</th>
@@ -38,6 +50,7 @@
 				<th style="color: Tomato">Contact No</th>
 				<th style="color: Tomato">Address</th>
 				<th style="color: Tomato">Email</th>
+				<th style="color: Tomato">Author</th>
 			</thead>
 			<tbody>
 				<?php
@@ -53,6 +66,7 @@
 						    echo '<td>'.$row['contact_no'].'</td>';
 						    echo '<td>'.$row['address'].'</td>';
 						    echo '<td>'.$row['email'].'</td>';
+					    echo '<td>'.$row['author'].'</td>';
 							echo '</tr>';
 					  	}
 
