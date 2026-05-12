@@ -13,10 +13,20 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM seeker";
-	$result = $conn->query($sql);
+	$blood_group = $_GET['blood_group'] ?? '';
+	$name        = $_GET['name'] ?? '';
 
-	
+	$sql    = "SELECT * FROM seeker WHERE 1=1";
+	$params = [];
+	$types  = '';
+	if ($blood_group) { $sql .= " AND blood_group = ?"; $params[] = $blood_group; $types .= 's'; }
+	if ($name)        { $sql .= " AND name LIKE ?";     $params[] = "%$name%";     $types .= 's'; }
+
+	$stmt = $conn->prepare($sql);
+	if ($params) $stmt->bind_param($types, ...$params);
+	$stmt->execute();
+	$result = $stmt->get_result();
+
 	$conn->close();
 ?>
 
@@ -28,6 +38,27 @@
 	<body align="center" <div style="border: 6px solid red; border-radius: 50px;width: 40%;margin-left: 400px;margin-top: 20px;background-color:powderblue;"></div>
 
 		<h1 style="color: Red">Available Blood Seeker</h1>
+
+		<form method="get" action="available_seeker_list.php" style="margin-bottom: 15px;">
+			<label for="blood_group">Blood Group:</label>
+			<select name="blood_group" id="blood_group">
+				<option value="">-- All --</option>
+				<?php
+					$groups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+					foreach ($groups as $g) {
+						$selected = ($blood_group === $g) ? 'selected' : '';
+						echo "<option value=\"$g\" $selected>$g</option>";
+					}
+				?>
+			</select>
+			&nbsp;
+			<label for="name">Name:</label>
+			<input type="text" name="name" id="name" value="<?php echo htmlspecialchars($name); ?>" placeholder="Search by name">
+			&nbsp;
+			<input type="submit" value="Search">
+			&nbsp;
+			<a href="available_seeker_list.php">Reset</a>
+		</form>
 
 		<table align="center" border="1">
 			<thead>
