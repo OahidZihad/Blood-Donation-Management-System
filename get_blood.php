@@ -15,9 +15,6 @@
 
 	$sql = "SELECT blood_id, blood_group, qty FROM blood_bank bb JOIN blood_stock bs ON bs.blood_id = bb.id";
 	$result = $conn->query($sql);
-
-	
-	$conn->close();
 ?>
 
 
@@ -45,7 +42,7 @@
 					  // output data of each row
 
 						 while($row = $result->fetch_assoc()) {
-						    echo '<option value="'.$row['blood_id'].'">'.$row[blood_group].' ->'. $row['qty'].'</option>';
+						    echo '<option value="'.$row['blood_id'].'">'.$row['blood_group'].' ->'. $row['qty'].'</option>';
 					  	}
 
 					} else {

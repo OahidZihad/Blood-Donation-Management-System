@@ -15,9 +15,6 @@
 
 	$sql = "SELECT id, blood_group FROM blood_bank";
 	$result = $conn->query($sql);
-
-	
-	$conn->close();
 ?>
 
 
@@ -39,7 +36,7 @@
 					  // output data of each row
 
 						 while($row = $result->fetch_assoc()) {
-						    echo '<option value="'.$row['id'].'">'.$row[blood_group].'</option>';
+						    echo '<option value="'.$row['id'].'">'.$row['blood_group'].'</option>';
 					  	}
 
 					} else {
