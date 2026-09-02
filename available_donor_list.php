@@ -13,10 +13,18 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM donor";
+	$perPage = 20;
+	$page    = max(1, intval($_GET["page"] ?? 1));
+	$offset  = ($page - 1) * $perPage;
+
+	$countResult = $conn->query("SELECT COUNT(*) AS total FROM donor");
+	$totalRows   = $countResult->fetch_assoc()["total"];
+	$totalPages  = max(1, (int) ceil($totalRows / $perPage));
+
+	$sql = "SELECT * FROM donor LIMIT $perPage OFFSET $offset";
 	$result = $conn->query($sql);
 
-	
+
 	$conn->close();
 ?>
 
@@ -65,7 +73,16 @@
 		</table>
 		<br>
 		<br>
-		
+
+		<?php if ($page > 1): ?>
+			<a href="?page=<?= $page - 1 ?>" style="color: Red;">&#8592; Previous</a> &nbsp;
+		<?php endif; ?>
+		Page <?= $page ?> of <?= $totalPages ?>
+		<?php if ($page < $totalPages): ?>
+			&nbsp; <a href="?page=<?= $page + 1 ?>" style="color: Red;">Next &#8594;</a>
+		<?php endif; ?>
+
+		<br><br>
 		<a href="index.html" style="color: Red">HOME</a><br><br>
 
 	</body>
