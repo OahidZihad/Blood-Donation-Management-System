@@ -13,10 +13,31 @@
 	  die("Connection failed: " . $conn->connect_error);
 	}
 
-	$sql = "SELECT * FROM seeker";
-	$result = $conn->query($sql);
+	$where = [];
+	$params = [];
+	$types = '';
+	if (!empty($_GET['blood_group'])) {
+	    $where[] = 'blood_group = ?';
+	    $params[] = $_GET['blood_group'];
+	    $types .= 's';
+	}
+	if (!empty($_GET['address'])) {
+	    $where[] = 'address LIKE ?';
+	    $params[] = '%' . $_GET['address'] . '%';
+	    $types .= 's';
+	}
 
-	
+	$sql = "SELECT * FROM seeker";
+	if ($where) {
+	    $sql .= " WHERE " . implode(" AND ", $where);
+	}
+	$stmt = $conn->prepare($sql);
+	if ($params) {
+	    $stmt->bind_param($types, ...$params);
+	}
+	$stmt->execute();
+	$result = $stmt->get_result();
+
 	$conn->close();
 ?>
 
@@ -28,6 +49,28 @@
 	<body align="center" <div style="border: 6px solid red; border-radius: 50px;width: 40%;margin-left: 400px;margin-top: 20px;background-color:powderblue;"></div>
 
 		<h1 style="color: Red">Available Blood Seeker</h1>
+
+		<form method="get" action="available_seeker_list.php" style="margin-bottom: 20px;">
+			<b>Blood Group:</b>
+			<select name="blood_group">
+				<option value="">-- All --</option>
+				<option value="A+" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'A+') echo 'selected'; ?>>A+</option>
+				<option value="A-" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'A-') echo 'selected'; ?>>A-</option>
+				<option value="B+" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'B+') echo 'selected'; ?>>B+</option>
+				<option value="B-" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'B-') echo 'selected'; ?>>B-</option>
+				<option value="AB+" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'AB+') echo 'selected'; ?>>AB+</option>
+				<option value="AB-" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'AB-') echo 'selected'; ?>>AB-</option>
+				<option value="O+" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'O+') echo 'selected'; ?>>O+</option>
+				<option value="O-" <?php if (isset($_GET['blood_group']) && $_GET['blood_group'] === 'O-') echo 'selected'; ?>>O-</option>
+			</select>
+			&nbsp;&nbsp;
+			<b>Address:</b>
+			<input type="text" name="address" value="<?php echo htmlspecialchars($_GET['address'] ?? ''); ?>" placeholder="e.g. Dhaka">
+			&nbsp;
+			<input type="submit" value="Search" style="color: Red">
+			&nbsp;
+			<a href="available_seeker_list.php" style="color: Red">Clear</a>
+		</form>
 
 		<table align="center" border="1">
 			<thead>
@@ -45,12 +88,12 @@
 
 						 while($row = $result->fetch_assoc()) {
 						    echo '<tr>';
-						    echo '<td>'.$row['id'].'</td>';
-						    echo '<td>'.$row['name'].'</td>';
-						    echo '<td>'.$row['address'].'</td>';
-						    echo '<td>'.$row['age'].'</td>';
-						    echo '<td>'.$row['blood_group'].'</td>';
-						    echo '<td>'.$row['contact_no'].'</td>';
+						    echo '<td>'.htmlspecialchars($row['id']).'</td>';
+						    echo '<td>'.htmlspecialchars($row['name']).'</td>';
+						    echo '<td>'.htmlspecialchars($row['address']).'</td>';
+						    echo '<td>'.htmlspecialchars($row['age']).'</td>';
+						    echo '<td>'.htmlspecialchars($row['blood_group']).'</td>';
+						    echo '<td>'.htmlspecialchars($row['contact_no']).'</td>';
 							echo '</tr>';
 					  	}
 
@@ -63,7 +106,7 @@
 		</table>
 		<br>
 		<br>
-		
+
 		<a href="index.html" style="color: Red">HOME</a><br><br>
 
 	</body>
